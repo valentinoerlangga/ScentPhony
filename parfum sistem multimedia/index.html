@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScentScape | Spatial Glassmorphism</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+    <div class="ambient-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <!-- Proyeksi Visual Animasi HTML (Iframe) -->
+    <iframe id="cinematic-projection" class="cinematic-bg" allowtransparency="true" frameborder="0"></iframe>
+    
+    <audio id="ambient-audio" loop></audio>
+
+    <div class="curtain curtain-left"></div>
+    <div class="curtain curtain-right"></div>
+
+    <div id="welcome-screen" class="glass-container">
+        <h1 id="brand-title">ScentScape</h1>
+        <p class="subtitle">Gunakan headphone untuk pengalaman sensoris maksimal.</p>
+        <button id="enter-btn" class="glass-btn">Masuk ke Lab Sensoris</button>
+    </div>
+
+    <!-- Tombol Kembali (Kiri Atas) -->
+    <button id="back-btn" class="glass-btn hidden" style="position: absolute; top: 30px; left: 30px; z-index: 100; font-size: 0.85rem; padding: 10px 22px;">&larr; Kembali ke Katalog</button>
+    
+    <!-- Tombol Mode Menonton Animasi (Kanan Atas) -->
+    <button id="toggle-ui-btn" class="glass-btn hidden" style="position: absolute; top: 30px; right: 30px; z-index: 100; font-size: 0.85rem; padding: 10px 22px;">👁 Sembunyikan Teks</button>
+
+    <!-- Antarmuka Utama -->
+    <div id="main-interface" class="glass-container hidden">
+        
+        <div class="search-module">
+            <input type="text" id="search-input" class="glass-input" placeholder="Cari notes (mis. Vanilla, Oud...)">
+            <button id="search-btn" class="glass-btn">Sintesis</button>
+        </div>
+
+        <nav id="sensory-grid" class="pill-nav">
+            <button class="note-btn glass-btn" data-note="citrus">Citrus</button>
+            <button class="note-btn glass-btn" data-note="aquatic">Aquatic</button>
+            <button class="note-btn glass-btn" data-note="floral">Floral</button>
+            <button class="note-btn glass-btn" data-note="iris">Iris</button>
+            <button class="note-btn glass-btn" data-note="vanilla">Vanilla</button>
+            <button class="note-btn glass-btn" data-note="spicy">Spicy</button>
+            <button class="note-btn glass-btn" data-note="woody">Woody</button>
+            <button class="note-btn glass-btn" data-note="vetiver">Vetiver</button>
+            <button class="note-btn glass-btn" data-note="musk">Musk</button>
+            <button class="note-btn glass-btn" data-note="leather">Leather</button>
+        </nav>
+
+        <main id="narrative-canvas">
+            <h2 id="note-title">Menunggu Reaksi...</h2>
+            <p id="note-desc">Ketik molekul aroma di atas atau sentuh modul wewangian untuk memulai proyeksi olfaktori.</p>
+            
+            <div id="spray-guide" class="guide-container hidden">
+                <div class="guide-row">
+                    <span class="guide-label">Feminine</span>
+                    <div class="guide-bar" id="bar-gender">
+                        <div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div>
+                    </div>
+                    <span class="guide-label">Masculine</span>
+                </div>
+                <div class="guide-row">
+                    <span class="guide-label">Siang</span>
+                    <div class="guide-bar" id="bar-time">
+                        <div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div>
+                    </div>
+                    <span class="guide-label">Malam</span>
+                </div>
+                <div class="guide-row">
+                    <span class="guide-label">Panas</span>
+                    <div class="guide-bar" id="bar-weather">
+                        <div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div>
+                    </div>
+                    <span class="guide-label">Hujan</span>
+                </div>
+                <div class="guide-row">
+                    <span class="guide-label">Kasual</span>
+                    <div class="guide-bar" id="bar-occasion">
+                        <div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div>
+                    </div>
+                    <span class="guide-label">Formal</span>
+                </div>
+            </div>
+
+            <button id="fav-btn" class="glass-btn hidden" style="margin-top: 25px;">Tambahkan ke Favorit 🤍</button>
+        </main>
+
+        <div id="favorites-section" style="margin-top: 35px; border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 25px; width: 100%;">
+            <p style="font-size: 0.9rem; opacity: 0.6; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Koleksi Pribadi</p>
+            <div id="fav-list" class="pill-nav" style="padding: 15px; border-radius: 20px; min-height: 60px; box-shadow: none;">
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

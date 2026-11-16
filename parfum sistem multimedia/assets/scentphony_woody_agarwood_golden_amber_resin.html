@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scentphony — Woody (Agarwood &amp; Golden Amber Resin)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #14110F;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    #stage {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+    /* Minimalist Corner-Only Replay Pill (Hidden by default for 100% clean recording) */
+    #replayBtn {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 50;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 15px;
+      border-radius: 9999px;
+      background: rgba(20, 17, 15, 0.52);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 158, 0, 0.45);
+      color: #FDE68A;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(4px);
+      transition: opacity 0.35s ease, transform 0.35s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
+    #replayBtn.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    #replayBtn:hover {
+      background: rgba(184, 93, 0, 0.78);
+      border-color: rgba(254, 243, 199, 0.88);
+      color: #FFFFFF;
+    }
+    #replayBtn:active {
+      transform: scale(0.96);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================================================================
+       FULL-BLEED 16:9 VECTOR STAGE (1920x1080 slice, 100vw x 100vh, Zero Bars)
+       ========================================================================= -->
+  <svg
+    id="stage"
+    viewBox="0 0 1920 1080"
+    preserveAspectRatio="xMidYMid slice"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <!-- Deep Twilight Tropical Rainforest Sky (#14110F -> #3D2114 -> #A65E24) -->
+      <linearGradient id="twilightSkyGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+        <stop offset="0%" stop-color="#14110F" />
+        <stop offset="28%" stop-color="#24150E" />
+        <stop offset="56%" stop-color="#3D2114" />
+        <stop offset="82%" stop-color="#7A421B" />
+        <stop offset="100%" stop-color="#A65E24" />
+      </linearGradient>
+
+      <!-- Warm Twilight Sun Glow Filtering Behind Upper Agarwood Canopy -->
+      <radialGradient id="twilightHorizonBloom" cx="52%" cy="46%" r="60%">
+        <stop offset="0%" stop-color="#FFCF70" stop-opacity="0.72" />
+        <stop offset="24%" stop-color="#D97E2A" stop-opacity="0.45" />
+        <stop offset="55%" stop-color="#6B3716" stop-opacity="0.2" />
+        <stop offset="100%" stop-color="#14110F" stop-opacity="0" />
+      </radialGradient>
+
+      <!-- Diagonal Warm Twilight Sunbeam Shafts -->
+      <linearGradient id="sunbeamTwilightGrad" x1="28%" y1="0%" x2="72%" y2="100%">
+        <stop offset="0%" stop-color="#FFE09E" stop-opacity="0.34" />
+        <stop offset="46%" stop-color="#E58D2E" stop-opacity="0.18" />
+        <stop offset="85%" stop-color="#7A421B" stop-opacity="0.05" />
+        <stop offset="100%" stop-color="#14110F" stop-opacity="0" />
+      </linearGradient>
+
+      <!-- Distant Rainforest Silhouette Gradient (#2C1810) -->
+      <linearGradient id="farSilhouetteGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#22120B" stop-opacity="0.78" />
+        <stop offset="65%" stop-color="#2C1810" stop-opacity="0.88" />
+        <stop offset="100%" stop-color="#3D2114" stop-opacity="0.92" />
+      </linearGradient>
+
+      <!-- Golden Mist Drifting Over Rainforest Floor -->
+      <linearGradient id="goldenMistGrad" x1="0%" y1="50%" x2="100%" y2="50%">
+        <stop offset="0%" stop-color="#E59A4B" stop-opacity="0" />
+        <stop offset="28%" stop-color="#F6C57A" stop-opacity="0.22" />
+        <stop offset="52%" stop-color="#FFE4A3" stop-opacity="0.28" />
+        <stop offset="76%" stop-color="#D9822B" stop-opacity="0.18" />
+        <stop offset="100%" stop-color="#E59A4B" stop-opacity="0" />
+      </linearGradient>
+
+      <!-- Hero Living Agarwood Trunk Bark Gradient (Rich Dark Mahogany & Warm Amber Rim) -->
+      <linearGradient id="agarwoodTrunkGrad" x1="0%" y1="50%" x2="100%" y2="50%">
+        <stop offset="0%" stop-color="#1B100B" />
+        <stop offset="22%" stop-color="#2C1810" />
+        <stop offset="52%" stop-color="#3D2216" />
+        <stop offset="84%" stop-color="#56301D" />
+        <stop offset="96%" stop-color="#8C4B23" />
+        <stop offset="100%" stop-color="#C97634" />
+      </linearGradient>
+
+      <!-- Agarwood Bark Ridge Highlight & Deep Furrow Gradients -->
+      <linearGradient id="barkRidgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#24130C" />
+        <stop offset="55%" stop-color="#4B2918" />
+        <stop offset="100%" stop-color="#7A4426" />
+      </linearGradient>
+
+      <!-- Natural Vertical Resin Fissure Cavity Gradient (Dark Heartwood + Amber Glow) -->
+      <linearGradient id="resinFissureGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#120A06" />
+        <stop offset="45%" stop-color="#1D0E08" />
+        <stop offset="82%" stop-color="#59280B" />
+        <stop offset="100%" stop-color="#B85D00" />
+      </linearGradient>
+
+      <!-- Viscous Golden Amber Resin Droplet Gradient (#FF9E00 to #B85D00) -->
+      <radialGradient id="amberResinDropGrad" cx="36%" cy="32%" r="72%">
+        <stop offset="0%" stop-color="#FFF3B0" />
+        <stop offset="24%" stop-color="#FFBE0B" />
+        <stop offset="56%" stop-color="#FF9E00" />
+        <stop offset="86%" stop-color="#D96B00" />
+        <stop offset="100%" stop-color="#B85D00" />
+      </radialGradient>
+
+      <!-- Amber Resin Warm Ambient Halo -->
+      <radialGradient id="amberResinGlowGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#FF9E00" stop-opacity="0.65" />
+        <stop offset="45%" stop-color="#D96B00" stop-opacity="0.24" />
+        <stop offset="100%" stop-color="#B85D00" stop-opacity="0" />
+      </radialGradient>
+
+      <!-- Layered Vector Woodsmoke Ribbon Gradients (#C48B45 Golden-Brown & #8A7968 Warm Grey) -->
+      <linearGradient id="woodsmokeGoldenGrad" x1="50%" y1="100%" x2="50%" y2="0%">
+        <stop offset="0%" stop-color="#FF9E00" stop-opacity="0.58" />
+        <stop offset="24%" stop-color="#C48B45" stop-opacity="0.46" />
+        <stop offset="68%" stop-color="#C48B45" stop-opacity="0.26" />
+        <stop offset="100%" stop-color="#C48B45" stop-opacity="0" />
+      </linearGradient>
+
+      <linearGradient id="woodsmokeGreyGrad" x1="50%" y1="100%" x2="50%" y2="0%">
+        <stop offset="0%" stop-color="#C48B45" stop-opacity="0.44" />
+        <stop offset="30%" stop-color="#8A7968" stop-opacity="0.40" />
+        <stop offset="72%" stop-color="#8A7968" stop-opacity="0.22" />
+        <stop offset="100%" stop-color="#8A7968" stop-opacity="0" />
+      </linearGradient>
+
+      <!-- Heavy Gold Dust Mote Gradient -->
+      <radialGradient id="heavyGoldDustGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#FFFBEB" stop-opacity="1" />
+        <stop offset="38%" stop-color="#FFB703" stop-opacity="0.78" />
+        <stop offset="76%" stop-color="#B85D00" stop-opacity="0.25" />
+        <stop offset="100%" stop-color="#B85D00" stop-opacity="0" />
+      </radialGradient>
+
+      <!-- Tropical Rainforest Canopy Foliage Gradients -->
+      <linearGradient id="canopyDarkGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#0E170F" />
+        <stop offset="100%" stop-color="#1C2E1B" />
+      </linearGradient>
+
+      <linearGradient id="canopySunlitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#284222" />
+        <stop offset="65%" stop-color="#486832" />
+        <stop offset="100%" stop-color="#7B8C3B" />
+      </linearGradient>
+
+      <!-- Mossy Forest Floor & Understory Fern Gradients -->
+      <linearGradient id="forestFloorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#26361D" />
+        <stop offset="45%" stop-color="#1A140F" />
+        <stop offset="100%" stop-color="#0E0B09" />
+      </linearGradient>
+
+      <linearGradient id="fernLeafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#182915" />
+        <stop offset="55%" stop-color="#355228" />
+        <stop offset="100%" stop-color="#698B3E" />
+      </linearGradient>
+
+      <!-- Reusable Clean Flat-Vector Tropical Fern Frond -->
+      <g id="tropicalFern">
+        <path d="M 0,0 Q 52,-92 148,-150" fill="none" stroke="#4D6E33" stroke-width="3" stroke-linecap="round" />
+        <path d="M 18,-26 C 6,-42 -12,-46 -22,-38 C -10,-30 4,-26 18,-26 Z" fill="url(#fernLeafGrad)" />
+        <path d="M 22,-30 C 38,-38 54,-34 60,-22 C 44,-22 32,-26 22,-30 Z" fill="url(#fernLeafGrad)" />
+        <path d="M 38,-54 C 24,-72 4,-78 -8,-70 C 6,-60 22,-54 38,-54 Z" fill="url(#fernLeafGrad)" />
+        <path d="M 42,-58 C 60,-68 78,-62 84,-48 C 66,-48 52,-54 42,-58 Z" fill="url(#fernLeafGrad)" />
+        <path d="M 62,-82 C 46,-100 26,-106 14,-98 C 28,-88 46,-82 62,-82 Z" fill="url(#fernLeafGrad)" />
+        <path d="M 66,-86 C 84,-96 102,-90 108,-76 C 90,-76 76,-82 66,-86 Z" fill="url(#fernLeafGrad)" />
+        <path d="M 88,-108 C 72,-124 54,-128 42,-120 C 56,-112 72,-108 88,-108 Z" fill="url(#fernLeafGrad)" />
+        <path d="M 92,-112 C 108,-120 124,-114 130,-102 C 114,-102 102,-108 92,-112 Z" fill="url(#fernLeafGrad)" />
+        <path d="M 116,-132 C 102,-144 86,-146 76,-138 C 88,-132 102,-130 116,-132 Z" fill="url(#fernLeafGrad)" />
+        <path d="M 120,-134 C 134,-140 146,-134 150,-124 C 136,-124 128,-130 120,-134 Z" fill="url(#fernLeafGrad)" />
+      </g>
+    </defs>
+
+    <!-- =======================================================================
+         CAMERA WORLD ROOT (Smooth Cubic-In-Out Zoom 1.0x -> 2.75x to Mid-Trunk)
+         ======================================================================= -->
+    <g id="cameraWorld">
+
+      <!-- =====================================================================
+           LAYER 1: TWILIGHT RAINFOREST SKY & DIAGONAL VOLUMETRIC SUNBEAMS
+           ===================================================================== -->
+      <g id="layerSkyBackdrop">
+        <rect x="-400" y="-300" width="2720" height="1680" fill="url(#twilightSkyGrad)" />
+        <rect x="-400" y="-300" width="2720" height="1680" fill="url(#twilightHorizonBloom)" />
+
+        <!-- Diagonal Twilight Sunbeams Piercing Canopy Gap -->
+        <g id="sunbeamsGroup">
+          <polygon id="sunbeam1" points="620,-120 820,-120 1340,1150 960,1150" fill="url(#sunbeamTwilightGrad)" />
+          <polygon id="sunbeam2" points="940,-120 1160,-120 1720,1150 1320,1150" fill="url(#sunbeamTwilightGrad)" />
+          <polygon id="sunbeam3" points="390,-120 550,-120 910,1150 610,1150" fill="url(#sunbeamTwilightGrad)" />
+        </g>
+      </g>
+
+      <!-- =====================================================================
+           LAYER 2: DISTANT RAINFOREST SILHOUETTES (#2C1810 & #14110F)
+           ===================================================================== -->
+      <g id="layerFarRainforest">
+        <g id="farCanopyTrees" fill="url(#farSilhouetteGrad)">
+          <!-- Tall Background Rainforest Trunks Extending Past Top Edge -->
+          <rect x="210" y="-120" width="38" height="1260" />
+          <rect x="435" y="-120" width="28" height="1260" />
+          <rect x="595" y="-120" width="46" height="1260" />
+          <rect x="1285" y="-120" width="44" height="1260" />
+          <rect x="1475" y="-120" width="30" height="1260" />
+          <rect x="1675" y="-120" width="42" height="1260" />
+          <!-- Distant Layered Canopy Foliage Crowns -->
+          <ellipse cx="260" cy="75" rx="190" ry="95" />
+          <ellipse cx="560" cy="40" rx="220" ry="110" />
+          <ellipse cx="1360" cy="55" rx="230" ry="105" />
+          <ellipse cx="1680" cy="80" rx="200" ry="95" />
+        </g>
+      </g>
+
+      <!-- =====================================================================
+           LAYER 3: GOLDEN MIST DRIFTING OVER RAINFOREST FLOOR
+           ===================================================================== -->
+      <g id="layerFloorMist">
+        <path id="goldenMist1" d="" fill="url(#goldenMistGrad)" />
+        <path id="goldenMist2" d="" fill="url(#goldenMistGrad)" />
+      </g>
+
+      <!-- =====================================================================
+           LAYER 4: HERO LIVING TOWERING AGARWOOD TREE (NO CUT STUMP!)
+           Complete living rainforest giant: sweeping buttress roots gripping the
+           mossy floor at y=1080, towering furrowed trunk through center, upper
+           spreading branches, and lush multi-layered tropical leaf canopy above.
+           ===================================================================== -->
+      <g id="heroAgarwoodTree">
+        <!-- A. Upper Spreading Agarwood Branches & Lush Overhead Leaf Canopy -->
+        <g id="agarwoodUpperCanopy">
+          <!-- Left & Right Major Spreading Limbs Extending Beyond Top Viewport -->
+          <path d="M 885,220 Q 740,125 540,45 L 555,15 Q 765,92 910,185 Z" fill="#23130C" />
+          <path d="M 1035,210 Q 1190,115 1410,30 L 1395,2 Q 1170,82 1010,175 Z" fill="#2C1810" />
+          <path d="M 920,140 Q 815,20 725,-95 L 762,-105 Q 848,10 950,125 Z" fill="#1F110B" />
+          <path d="M 1005,135 Q 1105,15 1210,-95 L 1175,-105 Q 1075,8 975,120 Z" fill="#2C1810" />
+
+          <!-- Lush Multi-Layered Tropical Leaf Canopy Clusters Overhead -->
+          <g fill="url(#canopyDarkGrad)">
+            <ellipse cx="640" cy="18" rx="235" ry="105" />
+            <ellipse cx="960" cy="-25" rx="340" ry="125" />
+            <ellipse cx="1290" cy="14" rx="245" ry="108" />
+            <ellipse cx="475" cy="65" rx="165" ry="72" />
+            <ellipse cx="1455" cy="58" rx="175" ry="76" />
+          </g>
+          <!-- Warm Twilight Sunlit Leaf Rim Clusters -->
+          <g fill="url(#canopySunlitGrad)" opacity="0.72">
+            <ellipse cx="760" cy="55" rx="145" ry="52" />
+            <ellipse cx="1040" cy="48" rx="165" ry="56" />
+            <ellipse cx="1245" cy="62" rx="135" ry="48" />
+          </g>
+        </g>
+
+        <!-- B. Continuous Living Agarwood Trunk & Sweeping Buttress Roots (y=-120 to y=1095) -->
+        <g id="agarwoodTrunkBody">
+          <!-- Main Towering Trunk Silhouette with Sweeping Buttress Roots at Base -->
+          <path
+            d="M 858,-120
+               L 1062,-120
+               C 1064,140 1072,420 1078,720
+               C 1085,845 1148,945 1265,1035
+               L 1235,1072
+               C 1135,1010 1072,955 1038,915
+               C 1028,975 1042,1035 1068,1085
+               L 1012,1092
+               C 992,1030 982,965 968,918
+               C 952,968 938,1032 918,1092
+               L 862,1085
+               C 888,1032 902,972 892,912
+               C 855,955 792,1012 685,1072
+               L 655,1035
+               C 775,945 835,845 842,720
+               C 848,420 856,140 858,-120 Z"
+            fill="url(#agarwoodTrunkGrad)"
+          />
+
+          <!-- Sweeping Buttress Root Ridges & Shadows -->
+          <path d="M 845,760 Q 815,915 695,1052" fill="none" stroke="#140C08" stroke-width="10" stroke-linecap="round" opacity="0.78" />
+          <path d="M 1075,755 Q 1105,910 1228,1048" fill="none" stroke="#7A421D" stroke-width="8" stroke-linecap="round" opacity="0.68" />
+          <path d="M 922,825 Q 912,955 882,1078" fill="none" stroke="#180E09" stroke-width="8" stroke-linecap="round" opacity="0.72" />
+          <path d="M 1004,825 Q 1014,955 1042,1078" fill="none" stroke="#5C3219" stroke-width="7" stroke-linecap="round" opacity="0.65" />
+
+          <!-- Organic Flat-Vector Agarwood Bark Ridges & Grain Plates (Continuous Vertical Texture) -->
+          <g id="agarwoodBarkTexture">
+            <!-- Left Side Bark Plates -->
+            <path d="M 874,-90 C 868,90 882,260 872,440 C 864,590 878,730 866,870" fill="none" stroke="#160D08" stroke-width="7" stroke-linecap="round" />
+            <path d="M 896,-60 C 904,110 890,290 902,475 C 910,615 894,750 904,885" fill="none" stroke="url(#barkRidgeGrad)" stroke-width="11" stroke-linecap="round" opacity="0.85" />
+            <path d="M 922,-100 C 915,75 928,245 918,415 C 912,560 924,710 916,860" fill="none" stroke="#190E09" stroke-width="5.5" stroke-linecap="round" />
+
+            <!-- Right Side Bark Plates (Catching Warm Twilight Amber Rim Light) -->
+            <path d="M 1042,-80 C 1048,100 1034,280 1046,465 C 1054,615 1038,760 1048,895" fill="none" stroke="#9C5629" stroke-width="6.5" stroke-linecap="round" opacity="0.78" />
+            <path d="M 1018,-105 C 1010,80 1024,265 1012,445 C 1004,595 1020,740 1010,880" fill="none" stroke="url(#barkRidgeGrad)" stroke-width="11" stroke-linecap="round" opacity="0.85" />
+            <path d="M 994,-70 C 1002,115 988,285 998,460 C 1004,610 990,745 998,875" fill="none" stroke="#1C100A" stroke-width="5.5" stroke-linecap="round" />
+
+            <!-- Fine Macro Bark Striations Visible During Close-Up (x: 925..995, y: 340..760) -->
+            <g stroke="#140B07" stroke-width="2.4" stroke-linecap="round" opacity="0.72">
+              <path d="M 936,340 Q 931,420 938,505 Q 942,585 934,670" fill="none" />
+              <path d="M 982,350 Q 988,435 980,520 Q 975,605 984,685" fill="none" />
+              <path d="M 947,385 Q 943,440 948,495" fill="none" />
+              <path d="M 971,395 Q 976,455 970,515" fill="none" />
+            </g>
+            <g stroke="#8F4E24" stroke-width="2" stroke-linecap="round" opacity="0.58">
+              <path d="M 940,345 Q 935,425 942,508" fill="none" />
+              <path d="M 985,355 Q 991,438 983,522" fill="none" />
+            </g>
+
+            <!-- Natural Vertical Agarwood Resin Fissure Cavity at Center of Trunk (960, 495) -->
+            <path
+              d="M 960,432
+                 C 966,452 971,474 969,498
+                 C 967,522 963,544 960,564
+                 C 956,544 951,522 950,498
+                 C 949,474 954,452 960,432 Z"
+              fill="url(#resinFissureGrad)"
+              stroke="#7A3E16"
+              stroke-width="1.8"
+            />
+            <!-- Warm Golden Inner Fissure Rim -->
+            <path
+              d="M 964,442 C 969,465 969,515 963,552"
+              fill="none"
+              stroke="#FF9E00"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              opacity="0.72"
+            />
+          </g>
+        </g>
+
+        <!-- C. VISCOUS GOLDEN AMBER RESIN DROPLET & STRETCHING FILAMENT (6.5s - 10.5s) -->
+        <g id="amberResinGroup" opacity="0">
+          <!-- Warm Ambient Amber Light Halo -->
+          <circle id="amberGlowHalo" cx="960" cy="505" r="38" fill="url(#amberResinGlowGrad)" />
+
+          <!-- Viscous Stretching Amber Filament Neck Anchored Inside Fissure (960, 502) -->
+          <path id="amberFilament" d="" fill="url(#amberResinDropGrad)" opacity="0.92" />
+
+          <!-- Primary Heavy Viscous Golden Amber Bead -->
+          <g id="amberPrimaryBead" transform="translate(960, 505)">
+            <path
+              id="amberBeadShape"
+              d="M 0,-12 C 6,-4 10,3 10,9 C 10,15 5.5,19 0,19 C -5.5,19 -10,15 -10,9 C -10,3 -6,-4 0,-12 Z"
+              fill="url(#amberResinDropGrad)"
+              stroke="#FFF3B0"
+              stroke-width="0.9"
+              stroke-opacity="0.75"
+            />
+            <!-- Glossy Specular Highlight Crescent -->
+            <path
+              d="M -4.2,3 C -5.5,7 -5.0,11.5 -2.2,13.8"
+              fill="none"
+              stroke="#FFFBEB"
+              stroke-width="2.1"
+              stroke-linecap="round"
+              opacity="0.92"
+            />
+            <circle cx="-3.5" cy="0.5" r="1.2" fill="#FFFFFF" />
+          </g>
+
+          <!-- Secondary Residual Amber Bead Remaining in Bark Fissure -->
+          <circle id="amberResidualBead" cx="960" cy="503" r="3.2" fill="url(#amberResinDropGrad)" opacity="0" />
+        </g>
+
+        <!-- D. LAYERED WARM WOODSMOKE RIBBONS MORPHING FROM AMBER DROPLET (10.5s - 15.0s+) -->
+        <g id="woodsmokeGroup" opacity="0">
+          <path id="smokeRibbon1" d="" fill="url(#woodsmokeGoldenGrad)" />
+          <path id="smokeRibbon2" d="" fill="url(#woodsmokeGreyGrad)" />
+          <path id="smokeRibbon3" d="" fill="url(#woodsmokeGoldenGrad)" />
+          <path id="smokeRibbon4" d="" fill="url(#woodsmokeGreyGrad)" />
+          <path id="smokeRibbon5" d="" fill="url(#woodsmokeGoldenGrad)" />
+        </g>
+      </g>
+
+      <!-- =====================================================================
+           LAYER 5: HEAVY GOLD DUST MOTES FLOATING LAZILY IN WARM AMBER GLOW
+           ===================================================================== -->
+      <g id="goldDustGroup"></g>
+
+      <!-- =====================================================================
+           LAYER 6: FOREGROUND PARALLAX FRAMING TREES, MOSSY FLOOR & FERNS
+           (Parts smoothly outward during 3.0s - 6.5s camera zoom-in)
+           ===================================================================== -->
+      <g id="layerForegroundParallax">
+        <!-- Mossy Rainforest Floor & Sweeping Understory Ferns -->
+        <g id="fgForestFloor">
+          <path d="M -200,975 Q 380,925 960,968 Q 1540,1010 2120,955 L 2120,1220 L -200,1220 Z" fill="url(#forestFloorGrad)" />
+          <!-- Rich Mossy Highlight Strip -->
+          <path d="M -120,972 Q 360,928 840,964" fill="none" stroke="#4D6E33" stroke-width="4" stroke-linecap="round" opacity="0.55" />
+          <path d="M 1080,976 Q 1560,998 2040,958" fill="none" stroke="#4D6E33" stroke-width="4" stroke-linecap="round" opacity="0.55" />
+
+          <!-- Understory Fern Clusters -->
+          <g id="fernLeft" transform="translate(310, 978)">
+            <use href="#tropicalFern" transform="scale(-1.15, 1.05) rotate(-12)" />
+            <use href="#tropicalFern" transform="scale(0.95, 0.9) rotate(10)" />
+          </g>
+          <g id="fernRight" transform="translate(1610, 982)">
+            <use href="#tropicalFern" transform="scale(-1.1, 1.0) rotate(-14)" />
+            <use href="#tropicalFern" transform="scale(1.18, 1.08) rotate(12)" />
+          </g>
+        </g>
+
+        <!-- Left Foreground Framing Rainforest Tree Silhouette (#14110F) -->
+        <g id="fgTreeLeft">
+          <path d="M -140,-180 L 185,-180 L 225,1220 L -140,1220 Z" fill="#14110F" />
+          <!-- Hanging Tropical Liana Vines -->
+          <path d="M 185,40 Q 245,260 210,490" fill="none" stroke="#14110F" stroke-width="6" stroke-linecap="round" />
+          <path d="M 210,120 Q 285,340 265,580" fill="none" stroke="#1C1613" stroke-width="4" stroke-linecap="round" />
+          <!-- Upper Left Foreground Foliage Frame -->
+          <ellipse cx="140" cy="40" rx="260" ry="135" fill="#14110F" />
+        </g>
+
+        <!-- Right Foreground Framing Rainforest Tree Silhouette (#14110F) -->
+        <g id="fgTreeRight">
+          <path d="M 1735,-180 L 2060,-180 L 2060,1220 L 1695,1220 Z" fill="#14110F" />
+          <!-- Hanging Tropical Liana Vines -->
+          <path d="M 1735,60 Q 1675,290 1715,520" fill="none" stroke="#14110F" stroke-width="6" stroke-linecap="round" />
+          <path d="M 1710,140 Q 1635,360 1660,610" fill="none" stroke="#1C1613" stroke-width="4" stroke-linecap="round" />
+          <!-- Upper Right Foreground Foliage Frame -->
+          <ellipse cx="1780" cy="35" rx="270" ry="140" fill="#14110F" />
+        </g>
+      </g>
+    </g>
+  </svg>
+
+  <!-- Minimalist Corner-Hover-Only Replay Button (100% Clean Screen by Default) -->
+  <button id="replayBtn" type="button" aria-label="Replay Animation">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+      <path d="M3 3v5h5" />
+    </svg>
+    <span>Replay</span>
+  </button>
+
+  <script>
+    /**
+     * ============================================================================
+     * SCENTPHONY — WOODY (AGARWOOD / KAYU GAHARU & GOLDEN AMBER RESIN)
+     * 60FPS Deterministic SVG Vector Motion Graphic ("Kok Bisa?" Style)
+     * Stage: 1920x1080 Full-Bleed Edge-to-Edge | 15.00s Seamless Open-Ending Loop
+     * ============================================================================
+     */
+    (() => {
+      const SVG_NS = 'http://www.w3.org/2000/svg';
+      const LOOP_DURATION = 15.0;
+      const TWO_PI_CYCLE = (Math.PI * 2) / LOOP_DURATION;
+
+      // --- DOM References ---
+      const replayBtn = document.getElementById('replayBtn');
+      const cameraWorld = document.getElementById('cameraWorld');
+
+      const sunbeamsGroup = document.getElementById('sunbeamsGroup');
+      const sunbeam1 = document.getElementById('sunbeam1');
+      const sunbeam2 = document.getElementById('sunbeam2');
+      const sunbeam3 = document.getElementById('sunbeam3');
+
+      const farCanopyTrees = document.getElementById('farCanopyTrees');
+      const goldenMist1 = document.getElementById('goldenMist1');
+      const goldenMist2 = document.getElementById('goldenMist2');
+
+      const agarwoodUpperCanopy = document.getElementById('agarwoodUpperCanopy');
+      const fgTreeLeft = document.getElementById('fgTreeLeft');
+      const fgTreeRight = document.getElementById('fgTreeRight');
+      const fgForestFloor = document.getElementById('fgForestFloor');
+      const fernLeft = document.getElementById('fernLeft');
+      const fernRight = document.getElementById('fernRight');
+
+      const amberResinGroup = document.getElementById('amberResinGroup');
+      const amberGlowHalo = document.getElementById('amberGlowHalo');
+      const amberFilament = document.getElementById('amberFilament');
+      const amberPrimaryBead = document.getElementById('amberPrimaryBead');
+      const amberBeadShape = document.getElementById('amberBeadShape');
+      const amberResidualBead = document.getElementById('amberResidualBead');
+
+      const woodsmokeGroup = document.getElementById('woodsmokeGroup');
+      const smokeRibbons = [
+        document.getElementById('smokeRibbon1'),
+        document.getElementById('smokeRibbon2'),
+        document.getElementById('smokeRibbon3'),
+        document.getElementById('smokeRibbon4'),
+        document.getElementById('smokeRibbon5')
+      ];
+
+      const goldDustGroup = document.getElementById('goldDustGroup');
+
+      // --- Playback & Corner-Hover UI State ---
+      let elapsedTime = 0.0;
+      let isPlaying = true;
+      let lastRafTimestamp = null;
+      let hideBtnTimeout = null;
+
+      // --- Math & Heavy Viscous Physics Helpers ---
+      const clamp = (v, min = 0, max = 1) => Math.max(min, Math.min(max, v));
+      const lerp = (a, b, t) => a + (b - a) * t;
+      const invLerp = (a, b, v) => clamp((v - a) / (b - a), 0, 1);
+
+      const easeInOutCubic = (t) => {
+        t = clamp(t);
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      };
+      const easeOutCubic = (t) => {
+        t = clamp(t);
+        return 1 - Math.pow(1 - t, 3);
+      };
+      const easeInOutSine = (t) => -(Math.cos(Math.PI * clamp(t)) - 1) / 2;
+
+      /**
+       * Heavy Viscous Resin Flow Curve:
+       * Simulates thick, syrupy agarwood resin overcoming surface tension slowly,
+       * stretching under gravity, and gliding smoothly downward.
+       */
+      function heavyViscousCurve(u) {
+        u = clamp(u, 0, 1);
+        return Math.pow(u, 2.15) * (1 - 0.18 * Math.sin(u * Math.PI));
+      }
+
+      function seededRand(seed) {
+        const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453123;
+        return x - Math.floor(x);
+      }
+
+      function createSvgEl(tag, attrs = {}) {
+        const el = document.createElementNS(SVG_NS, tag);
+        for (const [k, v] of Object.entries(attrs)) {
+          el.setAttribute(k, v);
+        }
+        return el;
+      }
+
+      // ==========================================================================
+      // 1. PROCEDURAL HEAVY GOLD DUST MOTES (65 LUMINOUS PARTICLES)
+      // ==========================================================================
+      const GOLD_DUST = Array.from({ length: 65 }, (_, i) => {
+        // Distributed across both wide rainforest view and macro close-up zone (x: 680..1240, y: 280..800)
+        const inMacroCore = i < 42;
+        const baseX = inMacroCore
+          ? 710 + seededRand(i * 7 + 1) * 500
+          : 220 + seededRand(i * 7 + 1) * 1480;
+        const baseY = inMacroCore
+          ? 320 + seededRand(i * 7 + 2) * 440
+          : 140 + seededRand(i * 7 + 2) * 820;
+
+        const r = inMacroCore
+          ? 1.4 + seededRand(i * 7 + 3) * 2.4
+          : 2.2 + seededRand(i * 7 + 3) * 3.8;
+        const driftX = (inMacroCore ? 12 : 26) + seededRand(i * 7 + 4) * 22;
+        const driftY = (inMacroCore ? 14 : 28) + seededRand(i * 7 + 5) * 24;
+        const phase = seededRand(i * 7 + 6) * Math.PI * 2;
+        const freq = i % 2 === 0 ? 1 : 2;
+
+        const g = createSvgEl('g', { opacity: '0' });
+        g.appendChild(createSvgEl('circle', {
+          cx: '0',
+          cy: '0',
+          r: (r * 2.6).toFixed(2),
+          fill: 'url(#heavyGoldDustGrad)'
+        }));
+        g.appendChild(createSvgEl('circle', {
+          cx: '0',
+          cy: '0',
+          r: (r * 0.65).toFixed(2),
+          fill: '#FFFBEB',
+          opacity: '0.92'
+        }));
+
+        goldDustGroup.appendChild(g);
+        return { el: g, baseX, baseY, driftX, driftY, phase, freq };
+      });
+
+      // ==========================================================================
+      // 2. GOLDEN RAINFOREST FLOOR MIST PATH BUILDER (0.0s - 6.5s Wide Shot)
+      // ==========================================================================
+      function buildFloorMistPath(baseY, amp, thick, tLoop, phase) {
+        const steps = 36;
+        const topPts = [];
+        const botPts = [];
+        for (let i = 0; i <= steps; i++) {
+          const u = i / steps;
+          const x = lerp(-120, 2040, u);
+          const taper = Math.sin(u * Math.PI);
+          const wave = Math.sin(u * Math.PI * 2.2 - tLoop * TWO_PI_CYCLE * 2 + phase) * amp;
+          const cy = baseY + wave;
+          const ht = thick * (0.25 + 0.75 * taper);
+          topPts.push(`${x.toFixed(1)},${(cy - ht).toFixed(1)}`);
+          botPts.unshift(`${x.toFixed(1)},${(cy + ht).toFixed(1)}`);
+        }
+        return `M ${topPts[0]} L ${topPts.join(' L ')} L ${botPts.join(' L ')} Z`;
+      }
+
+      // ==========================================================================
+      // 3. LAYERED VECTOR WOODSMOKE RIBBON BUILDER (10.5s - 15.0s+ Morphing)
+      // ==========================================================================
+      const SMOKE_SPECS = [
+        { offsetX: 0,   amp: 26, freq: 2.2, maxRise: 310, baseWidth: 16, phase: 0.0, delay: 0.00 },
+        { offsetX: -12, amp: 32, freq: 1.9, maxRise: 285, baseWidth: 14, phase: 1.4, delay: 0.12 },
+        { offsetX: 14,  amp: 29, freq: 2.4, maxRise: 295, baseWidth: 15, phase: 2.7, delay: 0.22 },
+        { offsetX: -6,  amp: 22, freq: 2.7, maxRise: 255, baseWidth: 11, phase: 4.0, delay: 0.34 },
+        { offsetX: 9,   amp: 24, freq: 2.1, maxRise: 265, baseWidth: 12, phase: 5.1, delay: 0.44 }
+      ];
+
+      function buildWoodsmokeRibbonPath(originX, originY, spec, morphGrow, tLoop) {
+        const steps = 34;
+        const leftPts = [];
+        const rightPts = [];
+        const currentRise = spec.maxRise * morphGrow;
+
+        for (let i = 0; i <= steps; i++) {
+          const u = i / steps; // 0 = bottom morph base, 1 = rising plume tip
+          const y = originY - u * currentRise;
+
+          // Organic sine-wave curl expanding gently as smoke rises
+          const swayEnvelope = Math.pow(u, 0.85);
+          const wave1 = Math.sin(u * Math.PI * spec.freq - tLoop * 1.65 + spec.phase) * spec.amp * swayEnvelope;
+          const wave2 = Math.cos(u * Math.PI * (spec.freq * 1.6) - tLoop * 1.1 + spec.phase) * (spec.amp * 0.34) * swayEnvelope;
+          const cx = originX + spec.offsetX * u + wave1 + wave2;
+
+          // Ribbon width swells organically from resin base then tapers delicately at top
+          const widthProfile = Math.sin(Math.pow(u, 0.65) * Math.PI);
+          const halfW = spec.baseWidth * (0.28 + 1.15 * widthProfile) * (0.45 + 0.55 * morphGrow);
+
+          leftPts.push(`${(cx - halfW).toFixed(1)},${y.toFixed(1)}`);
+          rightPts.unshift(`${(cx + halfW).toFixed(1)},${y.toFixed(1)}`);
+        }
+
+        return `M ${leftPts[0]} L ${leftPts.join(' L ')} L ${rightPts.join(' L ')} Z`;
+      }
+
+      // ==========================================================================
+      // 4. DETERMINISTIC 60FPS FRAME RENDERER (0.0s -> 15.0s Seamless Loop)
+      // ==========================================================================
+      function renderFrame(rawTime) {
+        const tLoop = ((rawTime % LOOP_DURATION) + LOOP_DURATION) % LOOP_DURATION;
+        const cycleTheta = tLoop * TWO_PI_CYCLE;
+
+        // ----------------------------------------------------------------------
+        // A. CAMERA PARALLAX ZOOM-IN (0.0s-3.0s Wide -> 3.0s-6.5s Zoom -> 15.0s)
+        // ----------------------------------------------------------------------
+        // Zoom in from 1.0x wide establishing shot to 2.75x macro mid-trunk view
+        // between 3.0s and 6.5s, hold richly during resin & woodsmoke (6.5s-14.1s),
+        // and glide seamlessly back across 14.1s-15.0s so t=15.0s matches t=0.0s.
+        const zoomIn = easeInOutCubic(invLerp(3.0, 6.5, tLoop));
+        const loopWrapOut = easeInOutCubic(invLerp(14.1, 15.0, tLoop));
+        const camProgress = zoomIn * (1 - loopWrapOut);
+
+        const camScale = lerp(1.0, 2.75, camProgress);
+        // Focus point (960, 540) stays centered as camera pushes into mid-trunk
+        const camTx = 960 * (1 - camScale);
+        const camTy = 540 * (1 - camScale) - camProgress * 45;
+        cameraWorld.setAttribute('transform', `translate(${camTx.toFixed(2)}, ${camTy.toFixed(2)}) scale(${camScale.toFixed(4)})`);
+
+        // Strong Multi-Layered Parallax Parting of Foreground Framing Trees & Floor
+        const fgPartX = camProgress * 265;
+        const fgDropY = camProgress * 110;
+        const fgOpacity = clamp(1 - camProgress * 0.92, 0, 1);
+
+        fgTreeLeft.setAttribute('transform', `translate(${(-fgPartX).toFixed(1)}, 0)`);
+        fgTreeRight.setAttribute('transform', `translate(${fgPartX.toFixed(1)}, 0)`);
+        fgForestFloor.setAttribute('transform', `translate(0, ${fgDropY.toFixed(1)})`);
+        fgTreeLeft.setAttribute('opacity', fgOpacity.toFixed(3));
+        fgTreeRight.setAttribute('opacity', fgOpacity.toFixed(3));
+        fgForestFloor.setAttribute('opacity', fgOpacity.toFixed(3));
+
+        // Distant rainforest silhouette subtle counter-parallax
+        const farShiftX = Math.sin(cycleTheta * 1) * 8;
+        farCanopyTrees.setAttribute('transform', `translate(${farShiftX.toFixed(2)}, ${(camProgress * 28).toFixed(1)})`);
+
+        // ----------------------------------------------------------------------
+        // B. TWILIGHT SUNBEAMS, GOLDEN FLOOR MIST & LIVING CANOPY BREATHING
+        // ----------------------------------------------------------------------
+        const beamPulse = 0.78 + 0.22 * Math.sin(cycleTheta * 2);
+        sunbeamsGroup.setAttribute('opacity', beamPulse.toFixed(3));
+        sunbeam1.setAttribute('transform', `skewX(${(Math.sin(cycleTheta * 1) * 1.1).toFixed(2)})`);
+        sunbeam2.setAttribute('transform', `skewX(${(Math.cos(cycleTheta * 1 + 0.9) * 1.3).toFixed(2)})`);
+        sunbeam3.setAttribute('transform', `skewX(${(Math.sin(cycleTheta * 1 + 1.8) * 1.0).toFixed(2)})`);
+
+        const canopyBreath = Math.sin(cycleTheta * 2) * 0.85;
+        agarwoodUpperCanopy.setAttribute('transform', `rotate(${canopyBreath.toFixed(2)} 960 150)`);
+
+        const fernSwayL = Math.sin(cycleTheta * 2 + 0.4) * 1.8;
+        const fernSwayR = Math.cos(cycleTheta * 2 + 1.1) * 1.8;
+        fernLeft.setAttribute('transform', `translate(310, 978) rotate(${fernSwayL.toFixed(2)})`);
+        fernRight.setAttribute('transform', `translate(1610, 982) rotate(${fernSwayR.toFixed(2)})`);
+
+        goldenMist1.setAttribute('d', buildFloorMistPath(895, 22, 48, tLoop, 0.0));
+        goldenMist2.setAttribute('d', buildFloorMistPath(940, 26, 54, tLoop, 2.4));
+
+        // ----------------------------------------------------------------------
+        // C. VISCOUS GOLDEN AMBER RESIN FLOW (6.5s - 10.8s)
+        // ----------------------------------------------------------------------
+        // Fissure anchor at (960, 498); droplet descends to y=652 (well above bottom edge
+        // of the 2.75x zoomed viewport, whose bottom is around y=720) before morphing!
+        const resinAnchorX = 960;
+        const resinAnchorY = 498;
+        const maxDropTravel = 152; // Ends at y = 650 (safely inside frame before morph)
+
+        if (tLoop >= 6.2 && tLoop <= 11.4) {
+          const wellProgress = easeOutCubic(invLerp(6.2, 7.2, tLoop));
+          const slideProgress = heavyViscousCurve(invLerp(7.0, 10.65, tLoop));
+          // Smooth morph handoff fade between 10.5s and 11.35s
+          const morphDissolve = 1 - easeInOutCubic(invLerp(10.5, 11.35, tLoop));
+
+          const beadY = resinAnchorY + 6 + slideProgress * maxDropTravel;
+          const stretchFactor = 1 + Math.sin(slideProgress * Math.PI) * 0.42;
+          const beadScale = (0.35 + 0.72 * wellProgress) * (1 + easeInOutCubic(invLerp(10.4, 11.2, tLoop)) * 0.45);
+
+          amberResinGroup.setAttribute('opacity', (wellProgress * morphDissolve).toFixed(3));
+          amberGlowHalo.setAttribute('cx', resinAnchorX.toFixed(1));
+          amberGlowHalo.setAttribute('cy', beadY.toFixed(1));
+          amberGlowHalo.setAttribute('r', (32 + slideProgress * 18).toFixed(1));
+
+          amberPrimaryBead.setAttribute(
+            'transform',
+            `translate(${resinAnchorX.toFixed(1)}, ${beadY.toFixed(1)}) scale(${beadScale.toFixed(3)}, ${(beadScale * stretchFactor).toFixed(3)})`
+          );
+
+          // Viscous golden filament neck connecting bark fissure to descending droplet
+          const neckTopW = 4.6 * wellProgress;
+          const neckMidW = lerp(3.4, 0.85, slideProgress);
+          const neckBotW = 5.2 * beadScale;
+          const midY = lerp(resinAnchorY, beadY - 6, 0.52);
+
+          if (slideProgress < 0.88 && morphDissolve > 0.05) {
+            const neckOp = (1 - invLerp(0.68, 0.88, slideProgress)) * morphDissolve;
+            amberFilament.setAttribute('opacity', neckOp.toFixed(3));
+            amberFilament.setAttribute(
+              'd',
+              `M ${(resinAnchorX - neckTopW).toFixed(2)},${resinAnchorY}
+               Q ${(resinAnchorX - neckMidW).toFixed(2)},${midY.toFixed(1)} ${(resinAnchorX - neckBotW).toFixed(2)},${(beadY - 4).toFixed(1)}
+               L ${(resinAnchorX + neckBotW).toFixed(2)},${(beadY - 4).toFixed(1)}
+               Q ${(resinAnchorX + neckMidW).toFixed(2)},${midY.toFixed(1)} ${(resinAnchorX + neckTopW).toFixed(2)},${resinAnchorY} Z`
+            );
+          } else {
+            amberFilament.setAttribute('opacity', '0');
+          }
+
+          // Residual glossy amber bead left inside fissure after main drop separates
+          const resOp = easeOutCubic(invLerp(8.8, 9.8, tLoop)) * morphDissolve * 0.88;
+          amberResidualBead.setAttribute('opacity', resOp.toFixed(3));
+        } else {
+          amberResinGroup.setAttribute('opacity', '0');
+        }
+
+        // ----------------------------------------------------------------------
+        // D. WARM WOODSMOKE SHAPE MORPHING & OPEN-ENDING DRIFT (10.5s - 15.0s+)
+        // ----------------------------------------------------------------------
+        // Morph origin at the exact lower suspension position of the amber droplet (960, 650)
+        const smokeOriginX = 960;
+        const smokeOriginY = 652;
+
+        if (tLoop >= 10.45) {
+          const smokeFadeIn = easeOutCubic(invLerp(10.45, 11.35, tLoop));
+          const smokeLoopWrap = 1 - easeInOutCubic(invLerp(14.1, 15.0, tLoop));
+          woodsmokeGroup.setAttribute('opacity', (smokeFadeIn * smokeLoopWrap).toFixed(3));
+
+          SMOKE_SPECS.forEach((spec, idx) => {
+            const localGrow = easeOutCubic(invLerp(10.45 + spec.delay, 13.4 + spec.delay, tLoop));
+            if (localGrow <= 0.001) {
+              smokeRibbons[idx].setAttribute('opacity', '0');
+              return;
+            }
+            smokeRibbons[idx].setAttribute('opacity', (0.78 - idx * 0.07).toFixed(2));
+            smokeRibbons[idx].setAttribute(
+              'd',
+              buildWoodsmokeRibbonPath(smokeOriginX, smokeOriginY, spec, localGrow, tLoop)
+            );
+          });
+        } else {
+          woodsmokeGroup.setAttribute('opacity', '0');
+        }
+
+        // ----------------------------------------------------------------------
+        // E. HEAVY GOLD DUST MOTES FLOATING LAZILY (0.0s - 15.0s Ambient)
+        // ----------------------------------------------------------------------
+        GOLD_DUST.forEach(gd => {
+          const x = gd.baseX + Math.sin(cycleTheta * gd.freq + gd.phase) * gd.driftX;
+          const y = gd.baseY + Math.cos(cycleTheta * gd.freq + gd.phase * 1.2) * gd.driftY;
+          const shimmer = 0.35 + 0.65 * Math.pow(0.5 + 0.5 * Math.sin(cycleTheta * 2 + gd.phase), 1.5);
+          const scale = 0.8 + 0.32 * Math.sin(cycleTheta * 2 + gd.phase);
+
+          gd.el.setAttribute('opacity', shimmer.toFixed(3));
+          gd.el.setAttribute('transform', `translate(${x.toFixed(1)}, ${y.toFixed(1)}) scale(${scale.toFixed(3)})`);
+        });
+      }
+
+      // ==========================================================================
+      // CORNER-HOVER-ONLY TRANSLUCENT REPLAY BUTTON (100% CLEAN SCREEN BY DEFAULT)
+      // ==========================================================================
+      function showCornerReplayTemporarily() {
+        replayBtn.classList.add('visible');
+        clearTimeout(hideBtnTimeout);
+        hideBtnTimeout = setTimeout(() => {
+          replayBtn.classList.remove('visible');
+        }, 2000);
+      }
+
+      window.addEventListener('mousemove', (e) => {
+        const nearRight = e.clientX >= window.innerWidth - 220;
+        const nearBottom = e.clientY >= window.innerHeight - 220;
+        if (nearRight && nearBottom) {
+          showCornerReplayTemporarily();
+        }
+      }, { passive: true });
+
+      replayBtn.addEventListener('mouseenter', () => {
+        clearTimeout(hideBtnTimeout);
+        replayBtn.classList.add('visible');
+      });
+
+      replayBtn.addEventListener('mouseleave', () => {
+        showCornerReplayTemporarily();
+      });
+
+      replayBtn.addEventListener('click', () => {
+        elapsedTime = 0.0;
+        isPlaying = true;
+        lastRafTimestamp = null;
+        renderFrame(0.0);
+        showCornerReplayTemporarily();
+      });
+
+      // Keyboard shortcut 'R' for instant replay without showing UI
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'r' || e.key === 'R') {
+          elapsedTime = 0.0;
+          isPlaying = true;
+          lastRafTimestamp = null;
+          renderFrame(0.0);
+        }
+      });
+
+      // --- 60fps RequestAnimationFrame Loop ---
+      function loop(timestamp) {
+        if (isPlaying) {
+          if (lastRafTimestamp !== null) {
+            const dt = (timestamp - lastRafTimestamp) / 1000;
+            elapsedTime = (elapsedTime + Math.min(dt, 0.1)) % LOOP_DURATION;
+          }
+          lastRafTimestamp = timestamp;
+          renderFrame(elapsedTime);
+        }
+        requestAnimationFrame(loop);
+      }
+
+      window.onload = function () {
+        renderFrame(0.0);
+        requestAnimationFrame(loop);
+      };
+    })();
+  </script>
+</body>
+</html>
