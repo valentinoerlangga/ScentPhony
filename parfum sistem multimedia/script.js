@@ -3,7 +3,7 @@ const scentDB = {
     aquatic: { title: "Aquatic / Marine", desc: "Membawa elemen air, garam laut, dan udara pantai. Bebas, jernih, dan sangat mendinginkan indera.", bgColor: "#cffafe", textColor: "#164e63", blob1: "#22d3ee", blob2: "#38bdf8", visual: "", audio: "assets/suara-aquatic.mp3", guide: { gender: 3, time: 1, weather: 1, occasion: 1 }, uiDelay: 1500 },
     woody: { 
         title: "Woody / Oud", 
-        desc: "Sebuah simfoni kemewahan alam. Aroma mahoni pekat, gaharu, dan cendana yang memancarkan maskulinitas absolut.", 
+        desc: "Sebuah kehangatan yang menenangkan. Karakter woody yang alami dan tahan lama menghadirkan kesan maskulin, profesional, sekaligus unisex yang pas untuk malam yang sejuk maupun acara formal.", 
         bgColor: "#1c1917", textColor: "#fdba74", blob1: "#431407", blob2: "#78350f", 
         visual: "assets/scentphony_woody_agarwood_golden_amber_resin.html", 
         audio: "assets/suara-woody.mp3", 
@@ -27,16 +27,14 @@ const unchartedState = {
     uiDelay: 1000
 };
 
-// --- Aset Vektor Ikon Mata (SVG) ---
 const iconEyeOff = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 6px;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
-
 const iconEyeOn = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 6px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
-// -----------------------------------
 
 const enterBtn = document.getElementById('enter-btn');
 const welcomeScreen = document.getElementById('welcome-screen');
 const mainInterface = document.getElementById('main-interface');
-const root = document.documentElement;
+const creditFooter = document.getElementById('credit-footer');
+const root = document.documentElement; 
 const noteTitle = document.getElementById('note-title');
 const noteDesc = document.getElementById('note-desc');
 const searchInput = document.getElementById('search-input');
@@ -48,15 +46,15 @@ const ambientAudio = document.getElementById('ambient-audio');
 const backBtn = document.getElementById('back-btn');
 const toggleUiBtn = document.getElementById('toggle-ui-btn'); 
 const sprayGuide = document.getElementById('spray-guide'); 
-
 const searchModule = document.querySelector('.search-module');
 const sensoryGrid = document.getElementById('sensory-grid');
 const favSection = document.getElementById('favorites-section');
 
 let currentActiveNote = '';
-let favorites = JSON.parse(localStorage.getItem('scentscape_favs')) || [];
 let uiTimeout; 
 let isUiHidden = false; 
+
+let favorites = JSON.parse(localStorage.getItem('scentscape_favs')) || [];
 
 function renderFavorites() {
     if (favorites.length === 0) {
@@ -78,7 +76,7 @@ function renderFavorites() {
         }
     });
 }
-renderFavorites();
+renderFavorites(); 
 
 function updateGuideUI(guideData) {
     if (!guideData) return;
@@ -87,7 +85,7 @@ function updateGuideUI(guideData) {
         const dashes = document.querySelectorAll(`#bar-${cat} .dash`);
         dashes.forEach((dash, index) => {
             if (index === guideData[cat] - 1) {
-                dash.classList.add('active');
+                dash.classList.add('active'); 
             } else {
                 dash.classList.remove('active');
             }
@@ -96,10 +94,11 @@ function updateGuideUI(guideData) {
 }
 
 enterBtn.addEventListener('click', () => {
-    gsap.to(welcomeScreen, {
+    gsap.to([welcomeScreen, creditFooter], {
         opacity: 0, y: -50, duration: 0.8, 
         onComplete: () => {
             welcomeScreen.classList.add('hidden');
+            creditFooter.classList.add('hidden');
             mainInterface.classList.remove('hidden');
             gsap.fromTo(mainInterface, 
                 { opacity: 0, scale: 0.9 }, 
@@ -116,7 +115,6 @@ function triggerSensoryState(queryKey) {
 
     gsap.to(ambientAudio, { volume: 0, duration: 0.5 });
     
-    // Pastikan tombol reset dengan ikon Eye-Off saat berpindah aroma
     toggleUiBtn.classList.add('hidden');
     isUiHidden = false;
     toggleUiBtn.innerHTML = `${iconEyeOff} Sembunyikan Teks`;
@@ -130,6 +128,7 @@ function triggerSensoryState(queryKey) {
             
             const revealNewScent = () => {
                 currentActiveNote = key;
+                
                 root.style.setProperty('--bg-color', data.bgColor);
                 root.style.setProperty('--text-color', data.textColor);
                 root.style.setProperty('--blob-color-1', data.blob1);
@@ -142,7 +141,7 @@ function triggerSensoryState(queryKey) {
                 if (data.audio) {
                     ambientAudio.src = data.audio;
                     ambientAudio.volume = 0;
-                    ambientAudio.play().catch(e => console.log("Audio dicegah."));
+                    ambientAudio.play().catch(e => console.log("Audio dicegah (Fitur Keamanan Browser)"));
                 } else {
                     ambientAudio.pause();
                     ambientAudio.removeAttribute('src');
@@ -151,11 +150,11 @@ function triggerSensoryState(queryKey) {
                 searchModule.classList.add('hidden');
                 sensoryGrid.classList.add('hidden');
                 favSection.classList.add('hidden');
-                
                 sprayGuide.classList.remove('hidden'); 
+                
                 if (isKnownScent) {
                     favBtn.classList.remove('hidden');
-                    favBtn.textContent = favorites.includes(key) ? 'Hapus dari Favorit 💔' : 'Tambahkan ke Favorit 🤍';
+                    favBtn.textContent = favorites.includes(key) ? 'Hapus dari Favorit' : 'Tambahkan ke Favorit';
                 } else {
                     favBtn.classList.add('hidden');
                 }
@@ -190,7 +189,7 @@ function triggerSensoryState(queryKey) {
                             { opacity: 1, y: 0, duration: 0.8, delay: 0.3, ease: "power2.out" }
                         );
                     }
-                }, data.uiDelay);
+                }, data.uiDelay); 
             };
 
             if (data.visual) {
@@ -198,7 +197,7 @@ function triggerSensoryState(queryKey) {
                 cinematicBg.src = data.visual;
                 
                 cinematicBg.onload = () => {
-                    revealNewScent();
+                    revealNewScent(); 
                     cinematicBg.onload = null; 
                 };
 
@@ -217,15 +216,14 @@ function triggerSensoryState(queryKey) {
     });
 }
 
-// Logika Tombol Sembunyikan/Tampilkan UI dengan Ikon Mata Vektor
 toggleUiBtn.addEventListener('click', () => {
     if (!isUiHidden) {
         gsap.to(mainInterface, { opacity: 0, scale: 0.95, duration: 0.6, ease: "power2.inOut" });
-        toggleUiBtn.innerHTML = `${iconEyeOn} Tampilkan Teks`; // Ganti ke ikon mata terbuka
+        toggleUiBtn.innerHTML = `${iconEyeOn} Tampilkan Teks`;
         isUiHidden = true;
     } else {
         gsap.to(mainInterface, { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" });
-        toggleUiBtn.innerHTML = `${iconEyeOff} Sembunyikan Teks`; // Ganti ke ikon mata dicoret
+        toggleUiBtn.innerHTML = `${iconEyeOff} Sembunyikan Teks`;
         isUiHidden = false;
     }
 });
@@ -253,7 +251,7 @@ backBtn.addEventListener('click', () => {
             root.style.setProperty('--blob-color-2', '#e5e7eb');
             
             noteTitle.textContent = "Menunggu Reaksi...";
-            noteDesc.textContent = "Ketik molekul aroma di atas atau sentuh modul wewangian untuk memulai proyeksi olfaktori.";
+            noteDesc.textContent = "Ketik aroma di atas atau sentuh modul wewangian untuk memulai.";
             
             cinematicBg.removeAttribute('src');
             ambientAudio.pause();
@@ -284,17 +282,18 @@ favBtn.addEventListener('click', () => {
     if (!currentActiveNote || !scentDB[currentActiveNote]) return;
     if (favorites.includes(currentActiveNote)) {
         favorites = favorites.filter(f => f !== currentActiveNote);
-        favBtn.textContent = 'Tambahkan ke Favorit 🤍';
+        favBtn.textContent = 'Tambahkan ke Favorit';
     } else {
         favorites.push(currentActiveNote);
-        favBtn.textContent = 'Hapus dari Favorit 💔';
+        favBtn.textContent = 'Hapus dari Favorit';
     }
     localStorage.setItem('scentscape_favs', JSON.stringify(favorites));
-    renderFavorites();
+    renderFavorites(); 
 });
 
 document.querySelectorAll('.note-btn').forEach(btn => {
     btn.addEventListener('click', (e) => triggerSensoryState(e.target.getAttribute('data-note')));
 });
+
 searchBtn.addEventListener('click', () => { if(searchInput.value !== '') triggerSensoryState(searchInput.value); });
 searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && searchInput.value !== '') triggerSensoryState(searchInput.value); });
