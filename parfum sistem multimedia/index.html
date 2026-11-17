@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScentScape | Spatial Glassmorphism</title>
+    <title>ScentPhony | Spatial Glassmorphism</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -14,32 +14,26 @@
         <div class="blob blob-2"></div>
     </div>
 
-    <!-- Proyeksi Visual Animasi HTML (Iframe) -->
     <iframe id="cinematic-projection" class="cinematic-bg" allowtransparency="true" frameborder="0"></iframe>
-    
     <audio id="ambient-audio" loop></audio>
 
     <div class="curtain curtain-left"></div>
     <div class="curtain curtain-right"></div>
 
     <div id="welcome-screen" class="glass-container">
-        <h1 id="brand-title">ScentScape</h1>
-        <p class="subtitle">Gunakan headphone untuk pengalaman sensoris maksimal.</p>
+        <h1 id="brand-title">ScentPhony</h1>
+        <p class="subtitle">Gunakan headphone untuk pengalaman maksimal.</p>
         <button id="enter-btn" class="glass-btn">Masuk ke Lab Sensoris</button>
     </div>
 
-    <!-- Tombol Kembali (Kiri Atas) -->
     <button id="back-btn" class="glass-btn hidden" style="position: absolute; top: 30px; left: 30px; z-index: 100; font-size: 0.85rem; padding: 10px 22px;">&larr; Kembali ke Katalog</button>
-    
-    <!-- Tombol Mode Menonton Animasi (Kanan Atas) -->
-    <button id="toggle-ui-btn" class="glass-btn hidden" style="position: absolute; top: 30px; right: 30px; z-index: 100; font-size: 0.85rem; padding: 10px 22px;">👁 Sembunyikan Teks</button>
+    <button id="toggle-ui-btn" class="glass-btn hidden" style="position: absolute; top: 30px; right: 30px; z-index: 100; font-size: 0.85rem; padding: 10px 22px;">Sembunyikan Teks</button>
 
-    <!-- Antarmuka Utama -->
     <div id="main-interface" class="glass-container hidden">
         
         <div class="search-module">
             <input type="text" id="search-input" class="glass-input" placeholder="Cari notes (mis. Vanilla, Oud...)">
-            <button id="search-btn" class="glass-btn">Sintesis</button>
+            <button id="search-btn" class="glass-btn">Search</button>
         </div>
 
         <nav id="sensory-grid" class="pill-nav">
@@ -57,7 +51,7 @@
 
         <main id="narrative-canvas">
             <h2 id="note-title">Menunggu Reaksi...</h2>
-            <p id="note-desc">Ketik molekul aroma di atas atau sentuh modul wewangian untuk memulai proyeksi olfaktori.</p>
+            <p id="note-desc">Ketik aroma di atas atau sentuh modul wewangian untuk memulai.</p>
             
             <div id="spray-guide" class="guide-container hidden">
                 <div class="guide-row">
@@ -90,7 +84,7 @@
                 </div>
             </div>
 
-            <button id="fav-btn" class="glass-btn hidden" style="margin-top: 25px;">Tambahkan ke Favorit 🤍</button>
+            <button id="fav-btn" class="glass-btn hidden" style="margin-top: 25px;">Tambahkan ke Favorit</button>
         </main>
 
         <div id="favorites-section" style="margin-top: 35px; border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 25px; width: 100%;">
@@ -99,6 +93,11 @@
             </div>
         </div>
     </div>
+
+    <footer id="credit-footer" class="glass-footer">
+        <p class="footer-title">ScentPhony – Telkom University</p>
+        <p class="footer-dev">Developed by Valentino Erlangga Putra & Muhammad Fikri Fauzan Naufal Aziz</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>
