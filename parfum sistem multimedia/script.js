@@ -159,11 +159,13 @@ let charX = 46;
 let targetCharX = 46;
 const defaultSpeech = "Selamat datang di Lab ScentPhony!";
 
-labScene.addEventListener('mousemove', (e) => {
+function followPointer(e) {
     const rect = labStage.getBoundingClientRect();
     const rawPercent = ((e.clientX - rect.left) / rect.width) * 100;
     targetCharX = Math.max(22, Math.min(82, rawPercent));
-});
+}
+labScene.addEventListener('pointermove', followPointer);
+labScene.addEventListener('pointerdown', followPointer);
 
 function animateCharacter() {
     if (!labScene.classList.contains('hidden')) {
@@ -173,7 +175,7 @@ function animateCharacter() {
 
         if (Math.abs(dx) > 0.35) {
             labCharacter.classList.add('is-walking');
-            charSprite.style.transform = dx < 0 ? 'scaleX(-1)' : 'scaleX(1)';
+            charSprite.style.setProperty('--flip', dx < 0 ? -1 : 1);
         } else {
             labCharacter.classList.remove('is-walking');
         }
@@ -239,30 +241,55 @@ function enterDashboardFromLab(targetViewId, autoOpenMatcher = false) {
     });
 }
 
-document.querySelectorAll('.lab-zone').forEach(zone => {
-    zone.addEventListener('mouseenter', () => {
-        const speech = zone.getAttribute('data-speech');
-        if (speech) charBubble.textContent = speech;
-    });
+const isTouchDevice = window.matchMedia('(hover: none)').matches;
+const labZones = Array.from(document.querySelectorAll('.lab-zone'));
+let activeZone = null;
 
-    zone.addEventListener('mouseleave', () => {
-        charBubble.textContent = defaultSpeech;
-    });
+function activateZone(zone) {
+    if (activeZone === zone) return;
+    if (activeZone) activeZone.classList.remove('is-active');
+    activeZone = zone;
+    zone.classList.add('is-active');
+    charBubble.textContent = zone.getAttribute('data-speech') || defaultSpeech;
+}
 
+function deactivateZone(zone) {
+    if (activeZone !== zone) return;
+    zone.classList.remove('is-active');
+    activeZone = null;
+    charBubble.textContent = defaultSpeech;
+}
+
+function triggerZone(zone) {
+    const action = zone.getAttribute('data-action');
+    if (action === 'home') {
+        enterDashboardFromLab('view-home');
+    } else if (action === 'catalog') {
+        enterDashboardFromLab('view-catalog');
+    } else if (action === 'smart-match') {
+        enterDashboardFromLab('view-catalog', true);
+    } else if (action === 'coming-soon') {
+        showLabToast(`${zone.getAttribute('data-feature')} sedang kami racik dan akan segera hadir di lab.`);
+    }
+}
+
+labZones.forEach(zone => {
+    if (!isTouchDevice) {
+        zone.addEventListener('mouseenter', () => activateZone(zone));
+        zone.addEventListener('mouseleave', () => deactivateZone(zone));
+    }
+    zone.addEventListener('focus', () => activateZone(zone));
+    zone.addEventListener('blur', () => deactivateZone(zone));
     zone.addEventListener('click', () => {
-        const action = zone.getAttribute('data-action');
-        if (action === 'home') {
-            enterDashboardFromLab('view-home');
-        } else if (action === 'catalog') {
-            enterDashboardFromLab('view-catalog');
-        } else if (action === 'smart-match') {
-            enterDashboardFromLab('view-catalog', true);
-        } else if (action === 'coming-soon') {
-            const featureName = zone.getAttribute('data-feature');
-            showLabToast(`${featureName} sedang kami racik dan akan segera hadir di lab.`);
-        }
+        // Layar sentuh: ketukan pertama menyorot, ketukan kedua membuka
+        if (isTouchDevice && activeZone !== zone) { activateZone(zone); return; }
+        triggerZone(zone);
+    });
+    zone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); triggerZone(zone); }
     });
 });
+
 
 backToLabBtn.addEventListener('click', () => {
     gsap.to(mainInterface, {
