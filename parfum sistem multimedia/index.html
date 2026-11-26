@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScentPhony | Spatial Glassmorphism</title>
+    <title>ScentPhony | Laboratorium Sensoris</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
@@ -20,77 +20,301 @@
     <div class="curtain curtain-left"></div>
     <div class="curtain curtain-right"></div>
 
-    <div id="welcome-screen" class="glass-container">
-        <h1 id="brand-title">ScentPhony</h1>
-        <p class="subtitle">Gunakan headphone untuk pengalaman maksimal.</p>
-        <button id="enter-btn" class="glass-btn">Masuk ke Lab Sensoris</button>
-    </div>
-
-    <button id="back-btn" class="glass-btn hidden" style="position: absolute; top: 30px; left: 30px; z-index: 100; font-size: 0.85rem; padding: 10px 22px;">&larr; Kembali ke Katalog</button>
-    <button id="toggle-ui-btn" class="glass-btn hidden" style="position: absolute; top: 30px; right: 30px; z-index: 100; font-size: 0.85rem; padding: 10px 22px;">Sembunyikan Teks</button>
-
-    <div id="main-interface" class="glass-container hidden">
+    <!-- HALAMAN AWAL: RUANG LAB INTERAKTIF -->
+    <section id="lab-welcome-scene" class="lab-scene-wrapper">
         
-        <div class="search-module">
-            <input type="text" id="search-input" class="glass-input" placeholder="Cari notes (mis. Vanilla, Oud...)">
-            <button id="search-btn" class="glass-btn">Search</button>
+        <header class="lab-header-bar">
+            <div class="lab-brand-badge">
+                <span class="lab-brand-name">ScentPhony</span>
+                <span class="lab-brand-divider"></span>
+                <span class="lab-brand-tagline">Ruang Laboratorium Sensoris</span>
+            </div>
+            <p class="lab-welcome-copy">
+                Arahkan kursor ke objek di ruang lab untuk menemukan fitur, lalu klik untuk masuk.
+            </p>
+        </header>
+
+        <!-- Panggung 16:9 (3 Lapis: Background -> Karakter -> Foreground Meja) -->
+        <div id="lab-stage" class="lab-stage">
+            <!-- LAPIS 1: Background Lab -->
+            <img src="assets/lab_scentphony.png" alt="Laboratorium Parfum ScentPhony" class="lab-bg-image">
+
+            <!-- LAPIS 2: Karakter Asisten Lab (Di Belakang Meja) -->
+            <div id="lab-character" class="lab-character">
+                <div id="char-bubble" class="char-bubble">Selamat datang di Lab ScentPhony!</div>
+                <canvas id="char-canvas" class="char-sprite"></canvas>
+            </div>
+
+            <!-- LAPIS 3: Foreground Mask Meja & Tiang Rak (Menutup Bagian Bawah Karakter) -->
+            <img src="assets/lab_scentphony.png" alt="" aria-hidden="true" class="lab-foreground-mask">
+
+            <!-- LAPIS 4: SVG Overlay untuk Garis Tegas Objek & Label Hover-Only (6 Zona) -->
+            <svg id="lab-interactive-svg" class="lab-svg-overlay" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+                
+                <!-- ZONA 1: JENDELA BESAR (KIRI) -> GEO-SENSORY -->
+                <g class="lab-zone" data-action="coming-soon" data-feature="Geo-Sensory" data-speech="Intip cuaca di luar jendela untuk rekomendasi aroma otomatis!">
+                    <polygon class="zone-hit" points="6,72 282,190 282,645 6,745" />
+                    <polygon class="zone-outline" points="6,72 282,190 282,645 6,745" />
+                    <g class="zone-label-group">
+                        <path class="zone-arrow" d="M210,330 Q180,350 155,375" />
+                        <path class="zone-arrow-head" d="M153,364 L153,377 L166,374" />
+                        <rect class="zone-label-bg" x="125" y="280" width="210" height="42" rx="21" />
+                        <text class="zone-label-text" x="230" y="306" text-anchor="middle">GEO-SENSORY</text>
+                    </g>
+                </g>
+
+                <!-- ZONA 2: BUKU TERBUKA -> BERANDA WAWASAN -->
+                <g class="lab-zone" data-action="home" data-speech="Mau tahu rahasia piramida aroma & bahan Nusantara?">
+                    <polygon class="zone-hit" points="315,672 410,632 555,638 530,676" />
+                    <polygon class="zone-outline" points="315,672 410,632 555,638 530,676" />
+                    <g class="zone-label-group">
+                        <path class="zone-arrow" d="M435,575 Q432,605 440,628" />
+                        <path class="zone-arrow-head" d="M432,620 L441,630 L446,618" />
+                        <rect class="zone-label-bg" x="335" y="528" width="200" height="42" rx="21" />
+                        <text class="zone-label-text" x="435" y="554" text-anchor="middle">BUKU WAWASAN</text>
+                    </g>
+                </g>
+
+                <!-- ZONA 3: RAK BOTOL KACA -> KATALOG 12 NOTES -->
+                <g class="lab-zone" data-action="catalog" data-speech="Di rak ini ada 12 karakter aroma siap disimulasikan.">
+                    <polygon class="zone-hit" points="370,382 800,382 800,632 370,632" />
+                    <polygon class="zone-outline" points="370,382 800,382 800,632 370,632" />
+                    <g class="zone-label-group">
+                        <path class="zone-arrow" d="M585,315 Q588,348 586,374" />
+                        <path class="zone-arrow-head" d="M578,365 L586,376 L594,365" />
+                        <rect class="zone-label-bg" x="460" y="268" width="250" height="42" rx="21" />
+                        <text class="zone-label-text" x="585" y="294" text-anchor="middle">KATALOG 12 NOTES</text>
+                    </g>
+                </g>
+
+                <!-- ZONA 4: TABLET -> SMART SCENT MATCHER -->
+                <g class="lab-zone" data-action="smart-match" data-speech="Bingung pilih wangi? Biar aku bantu diagnosa di sini.">
+                    <polygon class="zone-hit" points="688,642 786,646 742,676 654,670" />
+                    <polygon class="zone-outline" points="688,642 786,646 742,676 654,670" />
+                    <g class="zone-label-group">
+                        <path class="zone-arrow" d="M722,580 Q725,612 720,636" />
+                        <path class="zone-arrow-head" d="M713,627 L720,638 L728,628" />
+                        <rect class="zone-label-bg" x="598" y="532" width="250" height="42" rx="21" />
+                        <text class="zone-label-text" x="723" y="558" text-anchor="middle">SMART SCENT MATCH</text>
+                    </g>
+                </g>
+
+                <!-- ZONA 5: GELAS UKUR & TABUNG -> OLFACTORY MIX LAB -->
+                <g class="lab-zone" data-action="coming-soon" data-feature="Olfactory Mix Lab" data-speech="Meja racik ini sedang disiapkan untuk meramu aromamu sendiri.">
+                    <polygon class="zone-hit" points="852,515 1162,515 1162,658 852,658" />
+                    <polygon class="zone-outline" points="852,515 1162,515 1162,658 852,658" />
+                    <g class="zone-label-group">
+                        <path class="zone-arrow" d="M1006,450 Q1009,482 1007,507" />
+                        <path class="zone-arrow-head" d="M999,498 L1007,509 L1015,498" />
+                        <rect class="zone-label-bg" x="886" y="402" width="240" height="42" rx="21" />
+                        <text class="zone-label-text" x="1006" y="428" text-anchor="middle">OLFACTORY MIX LAB</text>
+                    </g>
+                </g>
+
+                <!-- ZONA 6: KOMPUTER DESKTOP (KANAN) -> SCENT EXPEDITION -->
+                <g class="lab-zone" data-action="coming-soon" data-feature="Scent Expedition" data-speech="Nyalakan komputer ini untuk memulai ekspedisi cerita aroma!">
+                    <polygon class="zone-hit" points="1235,445 1595,445 1595,678 1300,678 1235,622" />
+                    <polygon class="zone-outline" points="1235,445 1595,445 1595,678 1300,678 1235,622" />
+                    <g class="zone-label-group">
+                        <path class="zone-arrow" d="M1390,380 Q1394,412 1392,437" />
+                        <path class="zone-arrow-head" d="M1384,428 L1392,439 L1400,428" />
+                        <rect class="zone-label-bg" x="1272" y="332" width="235" height="42" rx="21" />
+                        <text class="zone-label-text" x="1390" y="358" text-anchor="middle">SCENT EXPEDITION</text>
+                    </g>
+                </g>
+
+            </svg>
         </div>
 
-        <nav id="sensory-grid" class="pill-nav">
-            <button class="note-btn glass-btn" data-note="citrus">Citrus</button>
-            <button class="note-btn glass-btn" data-note="aquatic">Aquatic</button>
-            <button class="note-btn glass-btn" data-note="floral">Floral</button>
-            <button class="note-btn glass-btn" data-note="iris">Iris</button>
-            <button class="note-btn glass-btn" data-note="vanilla">Vanilla</button>
-            <button class="note-btn glass-btn" data-note="spicy">Spicy</button>
-            <button class="note-btn glass-btn" data-note="woody">Woody</button>
-            <button class="note-btn glass-btn" data-note="vetiver">Vetiver</button>
-            <button class="note-btn glass-btn" data-note="musk">Musk</button>
-            <button class="note-btn glass-btn" data-note="leather">Leather</button>
-        </nav>
+        <div id="lab-toast" class="lab-toast hidden"></div>
+    </section>
 
-        <main id="narrative-canvas">
-            <h2 id="note-title">Menunggu Reaksi...</h2>
-            <p id="note-desc">Ketik aroma di atas atau sentuh modul wewangian untuk memulai.</p>
+    <button id="back-btn" class="glass-btn hidden" style="position: absolute; top: 25px; left: 25px; z-index: 100; font-size: 0.85rem; padding: 10px 22px;">&larr; Kembali ke Katalog</button>
+    <button id="toggle-ui-btn" class="glass-btn hidden" style="position: absolute; top: 25px; right: 25px; z-index: 100; font-size: 0.85rem; padding: 10px 22px;">Sembunyikan Teks</button>
+
+    <!-- DASBOR UTAMA -->
+    <div id="main-interface" class="dashboard-layout hidden">
+        
+        <aside class="glass-sidebar glass-panel">
+            <div class="brand-header">
+                <h2>ScentPhony</h2>
+                <p>Laboratorium Sensoris</p>
+            </div>
+
+            <div class="search-module sidebar-section">
+                <input type="text" id="search-input" class="glass-input" placeholder="Cari wewangian...">
+                <div class="sidebar-btn-group">
+                    <button id="search-btn" class="glass-btn">Search</button>
+                    <button id="smart-match-btn" class="glass-btn primary-btn">Smart Match</button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <p class="section-title">Eksplorasi</p>
+                <div class="sidebar-menu">
+                    <button id="back-to-lab-btn" class="glass-btn menu-btn">Ruang Lab Interaktif</button>
+                    <button id="menu-home-btn" class="glass-btn menu-btn active">Beranda (Wawasan)</button>
+                    <button id="menu-catalog-btn" class="glass-btn menu-btn">Katalog Utama</button>
+                    <button class="glass-btn menu-btn disabled">Geo-Sensory (Segera)</button>
+                    <button class="glass-btn menu-btn disabled">Olfactory Mix Lab (Segera)</button>
+                    <button class="glass-btn menu-btn disabled">Scent Expedition (Segera)</button>
+                </div>
+            </div>
+
+            <div id="favorites-section" class="sidebar-section" style="margin-top: auto;">
+                <p class="section-title">Koleksi Pribadi</p>
+                <div id="fav-list" class="fav-container">
+                    <span class="empty-text">Belum ada aroma yang disimpan.</span>
+                </div>
+            </div>
+        </aside>
+
+        <section class="glass-main-canvas glass-panel">
+            <main id="narrative-canvas" style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column;">
+                
+                <!-- VIEW 1: BERANDA (Wawasan Interaktif) -->
+                <div id="view-home" class="view-section home-scroll-container">
+                    <div style="margin-bottom: 35px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 25px;">
+                        <h2 class="glossary-title">Selamat Datang di ScentPhony</h2>
+                        <p class="glossary-desc" style="max-width: 100%; font-size: 1.05rem; line-height: 1.6; opacity: 0.9; margin-bottom: 15px;">
+                            Pernah membeli parfum yang mahal, tapi ternyata aromanya membuat pusing saat dipakai di cuaca panas? Atau merasa bingung saat membaca istilah wewangian yang terlalu puitis? Menemukan aroma yang benar-benar pas dengan kepribadian kita <i>(signature scent)</i> seringkali terasa seperti menebak-nebak dalam gelap.
+                        </p>
+                        <p class="glossary-desc" style="max-width: 100%; font-size: 1.05rem; line-height: 1.6; opacity: 0.9; font-weight: 400;">
+                            <b>Di situlah ScentPhony hadir.</b> Kami merancang "Laboratorium Sensoris" ini agar kamu bisa mengenali, merasakan, dan menyimulasikan sebuah wewangian sebelum membelinya. Lewat visualisasi warna, efek suara yang imersif, dan algoritma kecocokan situasi, kami memandumu menemukan wangi yang paling sempurna untuk setiap ceritamu.
+                        </p>
+                    </div>
+
+                    <div class="fact-banner">
+                        <p class="fact-label">TAHUKAH KAMU?</p>
+                        <p id="random-fact-text" class="fact-text">Memuat wawasan sensoris...</p>
+                    </div>
+
+                    <div class="home-grid">
+                        <div class="glass-card">
+                            <h3 class="card-title">Piramida Aroma</h3>
+                            <p class="card-subtitle">Arahkan kursor ke setiap lapisan untuk mempelajari anatomi wewangian.</p>
+                            <div class="pyramid-wrapper">
+                                <div class="pyr-layer pyr-top">
+                                    <p class="pyr-title">Top Notes</p>
+                                    <p class="pyr-time">15 - 30 Menit</p>
+                                    <div class="pyr-desc">Kesan pertama yang memikat. Molekul paling ringan yang cepat menguap. Umumnya berisi profil Citrus dan Fruity.</div>
+                                </div>
+                                <div class="pyr-layer pyr-heart">
+                                    <p class="pyr-title">Heart Notes</p>
+                                    <p class="pyr-time">2 - 4 Jam</p>
+                                    <div class="pyr-desc">Jantung parfum yang menentukan karakter utama. Muncul setelah top notes memudar. Didominasi Floral dan Spicy.</div>
+                                </div>
+                                <div class="pyr-layer pyr-base">
+                                    <p class="pyr-title">Base Notes</p>
+                                    <p class="pyr-time">4 - 8+ Jam</p>
+                                    <div class="pyr-desc">Fondasi pengikat yang lambat menguap. Molekul berat seperti Woody, Musk, dan Amber yang menempel erat di kulit.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card conc-container">
+                            <h3 class="card-title">Tingkat Konsentrasi</h3>
+                            <p class="card-subtitle">Semakin tinggi kadar minyak esensial, semakin pekat dan awet aromanya.</p>
+                            <div class="conc-item">
+                                <p class="conc-name">Eau de Toilette (EDT)</p>
+                                <div class="conc-bar"><div class="conc-fill" style="width: 30%;"></div></div>
+                                <p class="conc-desc">Segar dan ringan. Ideal untuk cuaca panas atau aktivitas kasual siang hari.</p>
+                            </div>
+                            <div class="conc-item">
+                                <p class="conc-name">Eau de Parfum (EDP)</p>
+                                <div class="conc-bar"><div class="conc-fill" style="width: 60%;"></div></div>
+                                <p class="conc-desc">Karakter kuat dan tahan lama. Pilihan serbaguna untuk aktivitas panjang.</p>
+                            </div>
+                            <div class="conc-item">
+                                <p class="conc-name">Parfum / Extrait</p>
+                                <div class="conc-bar"><div class="conc-fill" style="width: 95%;"></div></div>
+                                <p class="conc-desc">Sangat pekat dan intim. Berevolusi perlahan dan menempel hingga keesokan harinya.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="card-title" style="margin-top: 20px;">Jejak Botani Nusantara</h3>
+                    <p class="card-subtitle" style="margin-bottom: 15px;">Indonesia adalah salah satu episentrum bahan baku parfum kelas dunia.</p>
+                    <div class="origins-grid">
+                        <div class="origin-card">
+                            <h4>Patchouli (Nilam)</h4>
+                            <p>Tumbuh subur di Sumatra. Memberikan efek kedalaman yang manis dan membumi (earthy). Hampir semua parfum modern menggunakan nilam Indonesia sebagai pengikat base note.</p>
+                        </div>
+                        <div class="origin-card">
+                            <h4>Vetiver (Akar Wangi)</h4>
+                            <p>Diambil dari akar rumput tropis di tanah Jawa. Menghasilkan profil aroma kayu, asap, dan tanah basah yang sangat elegan dan maskulin.</p>
+                        </div>
+                        <div class="origin-card">
+                            <h4>Agarwood (Gaharu)</h4>
+                            <p>Resin hitam berharga dari pohon Aquilaria di hutan Asia Tenggara. Menghasilkan aroma "Oud" yang eksotis, mewah, dan sangat mahal di pasar Timur Tengah.</p>
+                        </div>
+                    </div>
+
+                    <div class="tips-box">
+                        <div class="tip-item">
+                            <span class="tip-title">Titik Nadi (Pulse Points)</span>
+                            <p>Semprotkan pada area tubuh yang memancarkan panas (pergelangan tangan, leher, belakang telinga) untuk membantu proyeksi aroma.</p>
+                        </div>
+                        <div class="tip-item">
+                            <span class="tip-title">Penyimpanan Tepat</span>
+                            <p>Musuh utama parfum adalah panas, cahaya, dan fluktuasi suhu. Simpan botolmu di dalam lemari gelap, bukan di kamar mandi.</p>
+                        </div>
+                    </div>
+                    <div style="height: 40px;"></div>
+                </div>
+
+                <!-- VIEW 2: KATALOG UTAMA -->
+                <div id="view-catalog" class="view-section hidden" style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <h2 style="font-size: 2.2rem; font-weight: 400; margin-bottom: 10px;">Katalog Wewangian</h2>
+                    <p style="font-size: 1rem; opacity: 0.8; margin-bottom: 40px; text-align: center;">Pilih molekul aroma untuk masuk ke dalam ruang simulasi sensoris.</p>
+                    <nav id="sensory-grid" class="pill-nav">
+                        <button class="note-btn glass-btn" data-note="citrus">Citrus</button>
+                        <button class="note-btn glass-btn" data-note="aquatic">Aquatic</button>
+                        <button class="note-btn glass-btn" data-note="floral">Floral</button>
+                        <button class="note-btn glass-btn" data-note="fruity">Fruity</button>
+                        <button class="note-btn glass-btn" data-note="iris">Iris</button>
+                        <button class="note-btn glass-btn" data-note="vanilla">Vanilla</button>
+                        <button class="note-btn glass-btn" data-note="spicy">Spicy</button>
+                        <button class="note-btn glass-btn" data-note="amber">Amber</button>
+                        <button class="note-btn glass-btn" data-note="woody">Woody</button>
+                        <button class="note-btn glass-btn" data-note="vetiver">Vetiver</button>
+                        <button class="note-btn glass-btn" data-note="musk">Musk</button>
+                        <button class="note-btn glass-btn" data-note="leather">Leather</button>
+                    </nav>
+                </div>
+
+                <!-- VIEW 3: RUANG SIMULASI (Detail) -->
+                <div id="view-detail" class="view-section hidden" style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div id="scent-details-section" style="text-align: center;">
+                        <h2 id="note-title" style="font-size: 3rem; font-weight: 300; margin-bottom: 15px;">Menunggu Reaksi...</h2>
+                        <p id="note-desc" style="font-size: 1.1rem; line-height: 1.6; max-width: 600px; opacity: 0.9; margin: 0 auto 30px;">Memproses molekul aroma...</p>
+                        
+                        <div id="spray-guide" class="guide-container">
+                            <div class="guide-row"><span class="guide-label">Feminine</span><div class="guide-bar" id="bar-gender"><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div></div><span class="guide-label">Masculine</span></div>
+                            <div class="guide-row"><span class="guide-label">Siang</span><div class="guide-bar" id="bar-time"><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div></div><span class="guide-label">Malam</span></div>
+                            <div class="guide-row"><span class="guide-label">Panas</span><div class="guide-bar" id="bar-weather"><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div></div><span class="guide-label">Hujan</span></div>
+                            <div class="guide-row"><span class="guide-label">Kasual</span><div class="guide-bar" id="bar-occasion"><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div></div><span class="guide-label">Formal</span></div>
+                        </div>
+
+                        <button id="fav-btn" class="glass-btn" style="margin-top: 25px;">Tambahkan ke Favorit</button>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+        <!-- Overlay & Modal Smart Matcher -->
+        <div id="modal-overlay" class="hidden"></div>
+        <div id="smart-match-modal" class="glass-container hidden modal-box">
+            <button id="close-modal-btn" class="glass-btn close-btn">X</button>
+            <h3>Smart Scent Matcher</h3>
+            <p class="modal-desc">Sesuaikan 4 kondisi di bawah ini, algoritma kami akan mencari wangi yang paling akurat.</p>
             
-            <div id="spray-guide" class="guide-container hidden">
-                <div class="guide-row">
-                    <span class="guide-label">Feminine</span>
-                    <div class="guide-bar" id="bar-gender">
-                        <div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div>
-                    </div>
-                    <span class="guide-label">Masculine</span>
-                </div>
-                <div class="guide-row">
-                    <span class="guide-label">Siang</span>
-                    <div class="guide-bar" id="bar-time">
-                        <div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div>
-                    </div>
-                    <span class="guide-label">Malam</span>
-                </div>
-                <div class="guide-row">
-                    <span class="guide-label">Panas</span>
-                    <div class="guide-bar" id="bar-weather">
-                        <div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div>
-                    </div>
-                    <span class="guide-label">Hujan</span>
-                </div>
-                <div class="guide-row">
-                    <span class="guide-label">Kasual</span>
-                    <div class="guide-bar" id="bar-occasion">
-                        <div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div><div class="dash"></div>
-                    </div>
-                    <span class="guide-label">Formal</span>
-                </div>
-            </div>
-
-            <button id="fav-btn" class="glass-btn hidden" style="margin-top: 25px;">Tambahkan ke Favorit</button>
-        </main>
-
-        <div id="favorites-section" style="margin-top: 35px; border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 25px; width: 100%;">
-            <p style="font-size: 0.9rem; opacity: 0.6; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Koleksi Pribadi</p>
-            <div id="fav-list" class="pill-nav" style="padding: 15px; border-radius: 20px; min-height: 60px; box-shadow: none;">
-            </div>
+            <div class="match-row"><span class="match-label">Karakter</span><div class="range-wrap"><span>Feminine</span><input type="range" id="match-gender" class="glass-range" min="1" max="5" value="3"><span>Masculine</span></div></div>
+            <div class="match-row"><span class="match-label">Waktu</span><div class="range-wrap"><span>Siang</span><input type="range" id="match-time" class="glass-range" min="1" max="5" value="3"><span>Malam</span></div></div>
+            <div class="match-row"><span class="match-label">Cuaca</span><div class="range-wrap"><span>Panas</span><input type="range" id="match-weather" class="glass-range" min="1" max="5" value="3"><span>Hujan</span></div></div>
+            <div class="match-row"><span class="match-label">Acara</span><div class="range-wrap"><span>Kasual</span><input type="range" id="match-occasion" class="glass-range" min="1" max="5" value="3"><span>Formal</span></div></div>
+            
+            <button id="find-match-btn" class="glass-btn submit-btn">Diagnosa Aroma</button>
         </div>
     </div>
 
